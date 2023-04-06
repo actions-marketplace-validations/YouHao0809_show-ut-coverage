@@ -1,0 +1,22 @@
+name: Show UT Coverage
+
+description: |
+  This action creates a check on GitHub that displays the coverage results.
+
+runs:
+  using: "node12"
+  main: "index.js"
+
+inputs:
+  github-token:
+    description: "The GitHub token used to authenticate API requests."
+    required: true
+    default: "${{ github.token }}"
+
+outputs:
+  check-id:
+    description: "The ID of the created check on GitHub."
+
+branding:
+  icon: "check-square"
+  color: "green"

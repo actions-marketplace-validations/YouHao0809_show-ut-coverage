@@ -4,7 +4,7 @@
   "description": "A Github Action that can show UT coverage report in Action and PR",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "ncc build index.js --source-map",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,17 +14,6 @@
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
     "glob": "^9.3.4",
-    "https-browserify": "^1.0.0",
     "lcov-parse": "^1.0.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
-    "babel-loader": "^9.1.2",
-    "os-browserify": "^0.3.0",
-    "path-browserify": "^1.0.1",
-    "stream-http": "^3.2.0",
-    "webpack": "^5.78.0",
-    "webpack-cli": "^5.0.1"
   }
 }

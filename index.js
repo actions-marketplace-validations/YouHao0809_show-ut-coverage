@@ -1,24 +1,24 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const fs = require('fs');
-const glob = require('glob');
-const lcovParse = require('lcov-parse');
+const core = require("@actions/core");
+const github = require("@actions/github");
+const fs = require("fs");
+const glob = require("glob");
+const lcovParse = require("lcov-parse");
 
 async function run() {
     try {
         // Get the input parameters
-        const token = core.getInput('github-token');
+        const token = core.getInput("github-token");
         const owner = github.context.repo.owner;
         const repo = github.context.repo.repo;
         const sha = github.context.sha;
 
         // Read the lcov.info file
-        const lcovFile = './coverage/lcov.info';
+        const lcovFile = "./coverage/lcov.info";
         // const lcovFiles = glob.sync('**/lcov.info', { ignore: ['**/node_modules/**'] });
         if (!fs.existsSync(lcovFile)) {
             throw new Error(`File not found: ${lcovFile}`);
         }
-        const lcovData = fs.readFileSync(lcovFile, { encoding: 'utf-8' });
+        const lcovData = fs.readFileSync(lcovFile, { encoding: "utf-8" });
 
         // Parse the UT results and coverage data
         const utResults = await parseUtResults(lcovData);
@@ -26,9 +26,10 @@ async function run() {
 
         // Initialize the GitHub API client
         const client = github.getOctokit(token);
+        console.log(client);
 
         // Create a new Check
-        const checkName = 'Unit Tests and Coverage';
+        const checkName = "Unit Tests and Coverage";
         const checkOptions = {
             owner: owner,
             repo: repo,
@@ -45,7 +46,7 @@ async function run() {
         await updateCheck(client, checkId, checkData);
 
         // Set the output parameters
-        core.setOutput('check-id', checkId);
+        core.setOutput("check-id", checkId);
     } catch (error) {
         core.setFailed(error.message);
     }
@@ -82,11 +83,13 @@ async function createCheck(client, options) {
         repo: options.repo,
         name: options.name,
         head_sha: options.head_sha,
-        status: 'in_progress',
+        status: "in_progress",
     });
 
     if (response.status !== 201) {
-        throw new Error(`Failed to create check: ${response.status} ${response.statusText}`);
+        throw new Error(
+            `Failed to create check: ${response.status} ${response.statusText}`
+        );
     }
 
     return response.data.id;
@@ -100,15 +103,17 @@ async function updateCheck(client, checkId, checkData) {
         owner,
         repo,
         check_run_id: checkId,
-        name: 'Unit Tests and Coverage',
+        name: "Unit Tests and Coverage",
         head_sha: sha,
-        status: 'completed',
-        conclusion: 'success',
+        status: "completed",
+        conclusion: "success",
         output: {
-            title: 'Unit Tests and Coverage Report',
-            summary: 'All unit tests passed and coverage is good',
+            title: "Unit Tests and Coverage Report",
+            summary: "All unit tests passed and coverage is good",
             annotations: [],
-            text: `## Unit Test Results\n\n${JSON.stringify(checkData.utResults)}\n\n## Coverage\n\n${JSON.stringify(checkData.coverage)}%\n`,
+            text: `## Unit Test Results\n\n${JSON.stringify(
+                checkData.utResults
+            )}\n\n## Coverage\n\n${JSON.stringify(checkData.coverage)}%\n`,
         },
     };
 
@@ -120,4 +125,4 @@ async function updateCheck(client, checkId, checkData) {
     }
 }
 
-run();  
+run();

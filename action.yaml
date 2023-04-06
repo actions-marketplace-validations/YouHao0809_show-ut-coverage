@@ -4,7 +4,7 @@ description: |
   This action creates a check on GitHub that displays the coverage results.
 
 runs:
-  using: "node12"
+  using: "node16"
   main: "index.js"
 
 inputs:

@@ -52,23 +52,24 @@ async function run() {
 }
 
 async function parseUtResults(lcovData) {
-    // TODO: Implement the UT results parser
-    // This function should extract the UT results from the lcovData
-    // and return them in a suitable format (e.g., an array of objects)
-    const { lines } = await lcovParse(lcovData);
+    try {
+        const { lines } = await lcovParse(lcovData);
 
-    const totalLines = lines.total;
-    const coveredLines = lines.covered;
-    const coverage = ((coveredLines / totalLines) * 100).toFixed(2);
+        const totalLines = lines.total;
+        const coveredLines = lines.covered;
+        const coverage = ((coveredLines / totalLines) * 100).toFixed(2);
 
-    return {
-        totalLines,
-        coveredLines,
-        coverage,
-    };
+        return {
+            totalLines,
+            coveredLines,
+            coverage,
+        };
+    } catch (error) {
+        throw new Error(`Failed to parse UT results: ${error.message}`);
+    }
 }
 
-function parseCoverage(lcovData) {
+async function parseCoverage(lcovData) {
     // TODO: Implement the coverage parser
     // This function should extract the coverage data from the lcovData
     // and return it in a suitable format (e.g., a percentage value)
@@ -83,7 +84,10 @@ async function createCheck(client, options) {
         head_sha: options.head_sha,
         status: 'in_progress',
     });
-    // TODO: Check for errors
+
+    if (response.status !== 201) {
+        throw new Error(`Failed to create check: ${response.status} ${response.statusText}`);
+    }
 
     return response.data.id;
 }
@@ -112,6 +116,7 @@ async function updateCheck(client, checkId, checkData) {
         await client.checks.update(updateParams);
     } catch (error) {
         console.error(error);
+        throw new Error(`Failed to update check: ${error.message}`);
     }
 }
 
